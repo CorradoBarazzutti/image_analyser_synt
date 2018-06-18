@@ -1,0 +1,11 @@
+for row in rows:
+	for col in cols: 
+		if  mat[row][col] > trig:
+			if row < ltr and col < ltc:
+				ltr, ltc = row, col
+			if row > rtr and col < rtc:
+				rtr, rtc = row, col
+			if row < lbr and col > lbc:
+				lbr, lbc = row, col
+			if row > rbr and col > rbc:
+				rbr, rbc = row, col
