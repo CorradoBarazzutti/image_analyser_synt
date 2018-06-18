@@ -1,46 +1,66 @@
-constant MAX : std_logic_vector := 255; 
-
-row := "00000000"
-col := "00000000"
-
-for i in 0 to MAX loop
-	report "row " & std_logic_vector'image(row);
-	if row >= ROWS then 
-		report "rows finished";
-		exit;
-	else 
-		for j in 0 to MAX loop
-			report "col " & std_logic_vector'image(col);
-			if col >= COLS then
-				report "cols finished on this row" 
-				exit;
-			else 
-				read_data();
-				update();
-			end if;
-			col := col + 1;
-		end loop;
-	end if;
-	row := row + 1;
-end loop;
-compute_result();
-write_result();
+----------------------------------------------------------------------------------
+-- Company: Polimi
+-- Engineer: Marcello Vaccarino
+-- 
+-- Create Date: 06/18/2018 10:44:02 AM
+-- Design Name: Final Project
+-- Module Name: project_reti_logiche - Behavioral
+-- Project Name: 
+-- Target Devices: xc7a200tfbg4841
+--
+-- Description: 
+-- data un'immagine in scala di
+-- grigi in un formato descritto successivamente, calcoli l'area del rettangolo minimo che circoscrive
+-- totalmente una figura di interesse presente nell'immagine stessa
+-- 
+-- Revision:
+-- Revision 0.01 - File Created
+-- Additional Comments:
+-- 
+----------------------------------------------------------------------------------
 
 
+library IEEE;
+use IEEE.STD_LOGIC_1164.ALL;
+
+use IEEE.NUMERIC_STD.ALL;
+
+entity project_reti_logiche is
+    generic (
+        max_w : integer := 100;
+        max_h : integer := 200
+    );
+    port (
+        i_clk       : in    std_logic;
+        i_start     : in    std_logic;
+        i_rst       : in    std_logic;
+        i_data      : in    std_logic_vector(7 downto 0);
+        o_address   : out   std_logic_vector(15 downto 0);
+        o_done      : out   std_logic;
+        o_en        : out   std_logic;
+        o_we        : out   std_logic;
+        o_data      : out   std_logic_vector(7 downto 0)
+    );
+end project_reti_logiche;
+
+architecture Behavioral of project_reti_logiche is
 
 procedure update 
 	(
-		data, trig: in std_logic_vector;
-		row, col: in std_logic_vector;
-		left, right, top, bottom: inout std_logic_vector
+		data, trig: in std_logic_vector(7 downto 0);
+		row, col: in std_logic_vector(7 downto 0);
+		left, right, top, bottom: inout std_logic_vector(7 downto 0)
 	) 
 is begin 
+	-- if the color is darker than the trigger value
 	if data >= trig:
+		-- row check
 		if row < top then
 			top := row;
 		else if row > bottom then
 			bottom := row;
 		end if; end if;
+		-- column check
 		if col < left then
 			left := col;
 		else if col > right then
@@ -49,26 +69,157 @@ is begin
 	end if;
 end;
 
-function compute_result 
+procedure read_header 
 	(
-		left, right, top, bottom: std_logic_vector
+		i: in std_logic_vector(1 downto 0);
+		N, o_address: inout std_logic_vector(7 downto 0);
+		i_clk, o_en: inout std_logic
 	) 
-	return std_logic_vector
+is begin 
+	-- update the requested adress
+    o_address <= std_logic_vector(UNSIGNED(N) + UNSIGNED(i));
+    -- enable the memory
+    o_en <= '1';
+    -- wait for half a period for the memory to set i_data
+    if i_clk'event and i_clk = '1' then
+    	-- read i_data in the second half of the period
+        if i_clk'event and i_clk = '0' then
+        end if;
+    end if;
+    -- disable memory update
+    o_en <= '0';
+end;
+
+procedure read_data 
+	(
+		row, col: in std_logic_vector(7 downto 0);
+		o_address, i_data: inout std_logic_vector(7 downto 0);
+		i_clk, o_en: inout std_logic
+	) 
+is begin 
+	-- update the requested adress
+    o_address <= std_logic_vector(UNSIGNED(N) + "00000011" + UNSIGNED(row) * UNSIGNED(COLS) + UNSIGNED(col));
+    -- enable the memory
+    o_en <= '1';
+    -- wait for half a period for the memory to set i_data
+    if i_clk'event and i_clk = '1' then
+    	-- read i_data in the second half of the period
+        if i_clk'event and i_clk = '0' then
+        end if;
+    end if;
+    -- disable memory update
+    o_en <= '0';
+end;
+
+function compute_area
+	(
+		left, right, top, bottom: std_logic_vector(7 downto 0)
+	) 
+	return std_logic_vector(15 downto 0)
 is begin 
 	return (UNSIGNED(right) - UNSIGNED(left)) * (UNSIGNED(bottom) - UNSIGNED(top));
 end;
 
-architecture example of subprograms is
+procedure write_result 
+	(
+		N: in std_logic_vector(7 downto 0);
+		area : in std_logic_vector(15 downto 0);
+		o_data: inout std_logic_vector(7 downto 0);
+		o_address: inout std_logic_vector(15 downto 0);
+		i_clk, o_en, o_we: inout std_logic
+	) 
+is begin 
+	-- write first word
+	-- update the requested adress
+    o_address <= N;
+    o_data <= area(15 downto 8);
+    -- enable the memory and writing
+    o_en <= '1';
+    o_we <= '1';
+    -- wait for half a period for the memory to set i_data
+    if i_clk'event and i_clk = '1' then
+    	-- read i_data in the second half of the period
+        if i_clk'event and i_clk = '0' then
+        end if;
+    end if;
 
-
-
+    -- write second word
+    -- update the requested adress
+    o_address <= N + 1;
+    o_data <= area(7 downto 0);
+    -- enable the memory and writing
+    o_en <= '1';
+    o_we <= '1';
+    -- wait for half a period for the memory to set i_data
+    if i_clk'event and i_clk = '1' then
+    	-- read i_data in the second half of the period
+        if i_clk'event and i_clk = '0' then
+        end if;
+    end if;
+    -- disable memory update
+    o_en <= '0';
+    o_we <= '0';
+end;
+    
 begin
-process (a)
-begin
-                     simple(a(0), a(1), a(2), m(0));
-                     simple(a(2), a(0), a(1), m(1));
-                     simple(a(1), a(2), a(0), m(2));
-end process; end example;
+    process(i_clk, i_start, i_rst, i_data, o_address, o_done, o_en, o_we, o_data)
+    	constant MAX : integer := 255;
+        variable row, col, N, ROWS, COLS, TRIGGER: std_logic_vector(7 downto 0);
+        variable left, right, top, bottom: std_logic_vector(7 downto 0);
+        variable area : std_logic_vector(15 downto 0);
+    begin
+        if i_rst = '1' then
+            o_done <= '0';
+            if i_start = '1' then
+            	-- read head
+            	N := "00000000"
+            	read_header("00", N, o_address, i_clk, o_en);
+            	ROWS := i_data;
+            	read_header("01", N, o_address, i_clk, o_en);
+            	COLS := i_data;
+            	read_header("10", N, o_address, i_clk, o_en);
+            	TRIG := i_data;
+            	-- loop over the grid and compute results
+                row := "00000000"
+				col := "00000000"
+                for i in 0 to MAX loop
+					report "row " & std_logic_vector'image(row);
+					if row >= ROWS then 
+						report "rows finished";
+						exit;
+					else 
+						for j in 0 to MAX loop
+							report "col " & std_logic_vector'image(col);
+							if col >= COLS then
+								report "cols finished on this row" 
+								exit;
+							else 
+								read_data (row, col, o_address, i_data, i_clk, o_en);
+								update(i_data, TRIG, row, col, left, right, top, bottom);
+							end if;
+							col := col + 1;
+						end loop;
+					end if;
+					row := row + 1;
+				end loop;
+				area := compute_area(left, right, top, bottom);
+				write_result (N, area, o_data, o_address, i_clk, o_en, o_we);
+				-- mark process finished
+                o_done <= '1';
+            end if;
+        end if;
+    end process;
+end Behavioral; 
+
+
+
+
+
+
+
+
+
+
 
 
 
