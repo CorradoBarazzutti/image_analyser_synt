@@ -1,0 +1,12 @@
+#-----------------------------------------------------------
+# Webtalk v2018.1 (64-bit)
+# SW Build 2188600 on Wed Apr  4 18:40:38 MDT 2018
+# IP Build 2185939 on Wed Apr  4 20:55:05 MDT 2018
+# Start of session at: Mon Jun 18 12:59:31 2018
+# Process ID: 14216
+# Current directory: C:/Users/Serena/Desktop/project_final/project_final.sim/sim_1/behav/xsim
+# Command line: wbtcv.exe -mode batch -source C:/Users/Serena/Desktop/project_final/project_final.sim/sim_1/behav/xsim/xsim.dir/project_reti_logiche_behav/webtalk/xsim_webtalk.tcl -notrace
+# Log file: C:/Users/Serena/Desktop/project_final/project_final.sim/sim_1/behav/xsim/webtalk.log
+# Journal file: C:/Users/Serena/Desktop/project_final/project_final.sim/sim_1/behav/xsim\webtalk.jou
+#-----------------------------------------------------------
+source C:/Users/Serena/Desktop/project_final/project_final.sim/sim_1/behav/xsim/xsim.dir/project_reti_logiche_behav/webtalk/xsim_webtalk.tcl -notrace
