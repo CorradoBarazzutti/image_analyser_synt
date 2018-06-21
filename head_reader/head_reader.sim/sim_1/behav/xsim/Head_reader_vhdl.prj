@@ -1,6 +1,0 @@
-# compile vhdl design source files
-vhdl xil_defaultlib  \
-"../../../../head_reader.srcs/sources_1/new/Head_reader.vhd" \
-
-# Do not sort compile order
-nosort
