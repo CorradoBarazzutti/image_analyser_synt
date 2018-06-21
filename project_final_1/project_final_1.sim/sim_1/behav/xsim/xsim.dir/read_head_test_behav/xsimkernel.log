@@ -2,3 +2,6 @@ Running: xsim.dir/read_head_test_behav/xsimk.exe -simmode gui -wdb read_head_tes
 Design successfully loaded
 Design Loading Memory Usage: 6344 KB (Peak: 6344 KB)
 Design Loading CPU Usage: 77 ms
+Simulation completed
+Simulation Memory Usage: 9440 KB (Peak: 9440 KB)
+Simulation CPU Usage: 265 ms

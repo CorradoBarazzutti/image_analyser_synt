@@ -1,0 +1,5 @@
+Vivado Simulator 2018.1
+Copyright 1986-1999, 2001-2017 Xilinx, Inc. All Rights Reserved.
+Running: C:/Xilinx/Vivado/2018.1/bin/unwrapped/win64.o/xelab.exe -wto bd0fdb8b725044ff8a61313e5e873e31 --incr --debug typical --relax --mt 2 -L xil_defaultlib -L secureip --snapshot project_reti_logiche_behav xil_defaultlib.project_reti_logiche -log elaborate.log 
+Using 2 slave threads.
+ERROR: [XSIM 43-3225] Cannot find design unit xil_defaultlib.project_reti_logiche in library work located at xsim.dir/work.
